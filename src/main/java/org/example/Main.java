@@ -1,6 +1,7 @@
 package org.example;
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+
         int lastid = 0;
 
         while (true) {
@@ -26,29 +28,71 @@ public class Main {
                 String title = sc.nextLine().trim();
                 System.out.print("내용 : ");
                 String body = sc.nextLine().trim();
+                String date = Util.getDate();
+                String newDate = Util.getDate();
                 lastid++;
-                Article article = new Article(lastid, title, body);
+                Article article = new Article(lastid, title, body, date, newDate);
                 lst.add(article);
                 System.out.println(lastid + "번 글이 생성되었습니다.");
             } else if (cmd.equals("list")) {
                 System.out.println("===== 글 목록 =====");
-                System.out.println("번호  /   제목  /내용");
+                System.out.println("번호  /   제목  /   내용/     작성일자");
                 for (int i = lst.size() - 1; i >= 0; --i) {
                     Article a = lst.get(i);
-                    System.out.println(a.getId() + " / " + a.getTitle() + " / " + a.getBody());
+                    System.out.println(a.getId() + " / " + a.getTitle() + " / " + a.getBody() + " / " + a.getDate());
                 }
-            } else if (cmd.startsWith("detail")) {
+            }else if(cmd.startsWith("article find")){
+                String keyword = cmd.substring("article find".length()).trim();
+
+                List<Article> a = lst;
+                if(keyword.length()>0){
+                    a = new ArrayList<>();
+                    System.out.println("검색어 : " + keyword);
+                    for(Article article : lst){
+                        if(article.getTitle().contains(keyword)){
+                            a.add(article);
+                        }
+                    }
+                    if(a.size()==0){
+                        System.out.println("검색 결과 없음");
+                        continue;
+                    }
+                }
+                System.out.println("===== 검색 결과 =====");
+                System.out.println("번호  /   제목  /   내용/     작성일자");
+                for (int i = a.size() - 1; i >= 0; --i) {
+                    System.out.println(a.get(i).getId() + " / " + a.get(i).getTitle() + " / " + a.get(i).getBody() + " / " + a.get(i).getDate());
+                }
+
+            }
+            else if (cmd.startsWith("detail")) {
                 String[] str = cmd.split(" ");
                 int num = Integer.parseInt(str[1]);
                 Article a = getArticleId(num);
+                if(a == null){
+                    System.out.println(num + "번 게시글은 없습니다.");
+                    continue;
+                }
                 System.out.println("번호 : " + a.getId());
                 System.out.println("제목 : " + a.getTitle());
                 System.out.println("내용 : " + a.getBody());
+                System.out.println("등록 일 : " + a.getDate());
+                System.out.println("수정 일 : " + a.getNewDate());
 
             } else if (cmd.startsWith("delete")) {
                 String[] str = cmd.split(" ");
-                int num = Integer.parseInt(str[1]);
+                int num;
+                try{
+                    num = Integer.parseInt(str[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("error");
+                    return;
+                }catch (IndexOutOfBoundsException e){
+                    System.out.println("error");
+                    return;
+                }
                 Article a = getArticleId(num);
+
                 int idx = -1;
                 if (a == null) {
                     System.out.println(num + "번 게시글은 없습니다.");
@@ -98,11 +142,15 @@ class Article {
     private int id;
     private String title;
     private String body;
+    private String date;
+    private String newDate;
 
-    public Article(int id, String title, String body) {
+    public Article(int id, String title, String body, String date, String newDate) {
         this.id = id;
         this.title = title;
         this.body = body;
+        this.date = date;
+        this.newDate = newDate;
     }
 
     public int getId() {
@@ -127,5 +175,21 @@ class Article {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getNewDate() {
+        return newDate;
+    }
+
+    public void setNewDate(String newDate) {
+        this.newDate = newDate;
     }
 }
