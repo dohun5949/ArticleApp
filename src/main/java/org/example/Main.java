@@ -8,12 +8,13 @@ import java.util.Scanner;
 
 public class Main {
     private static List<Article> lst = new ArrayList<>();
+    private static List<Member> memberList = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         int lastid = 0;
-
+        int memberId = 0;
         while (true) {
             System.out.print("명령어 : ");
             String cmd = sc.nextLine().trim();
@@ -23,7 +24,47 @@ public class Main {
             }
             if (cmd.equals("exit")) {
                 break;
-            } else if (cmd.equals("write")) {
+            } else if (cmd.equals("member join")) {
+                System.out.println("=== 회원 가입 ===");
+                memberId++;
+                String loginId;
+                while(true){
+                    System.out.print("아이디 : ");
+                    loginId = sc.nextLine().trim();
+                    boolean flag = false;
+                    if(!isJoinable(loginId)){
+                        System.out.println(loginId + "는 사용할 수 없는 아이디입니다.");
+                        continue;
+                    }
+                    break;
+                }
+                String loginPw;
+                while(true) {
+                    System.out.print("비밀 번호 : ");
+                    loginPw = sc.nextLine().trim();
+                    System.out.print("비밀 번호 확인 : ");
+                    String rePw = sc.nextLine().trim();
+                    if(!loginPw.equals(rePw)){
+                        System.out.println("비밀번호를 확인하세요");
+                        continue;
+                    }
+                    break;
+                }
+                System.out.print("이름 : ");
+                String name = sc.nextLine().trim();
+                String Date = Util.getDate();
+                String UpdateDAte = Util.getDate();
+
+                Member m = new Member(memberId, loginId, loginPw, name, Date, UpdateDAte);
+                memberList.add(m);
+                System.out.println(memberId + "번 회원이 등록되었습니다.");
+            }else if(cmd.equals("member list")){
+                System.out.println("=== 회원 목록 ===");
+                for(Member m : memberList){
+                    System.out.println(m.toString());
+                }
+            }
+            else if (cmd.equals("write")) {
                 System.out.print("제목 : ");
                 String title = sc.nextLine().trim();
                 System.out.print("내용 : ");
@@ -41,19 +82,19 @@ public class Main {
                     Article a = lst.get(i);
                     System.out.println(a.getId() + " / " + a.getTitle() + " / " + a.getBody() + " / " + a.getDate());
                 }
-            }else if(cmd.startsWith("article find")){
+            } else if (cmd.startsWith("article find")) {
                 String keyword = cmd.substring("article find".length()).trim();
 
                 List<Article> a = lst;
-                if(keyword.length()>0){
+                if (keyword.length() > 0) {
                     a = new ArrayList<>();
                     System.out.println("검색어 : " + keyword);
-                    for(Article article : lst){
-                        if(article.getTitle().contains(keyword)){
+                    for (Article article : lst) {
+                        if (article.getTitle().contains(keyword)) {
                             a.add(article);
                         }
                     }
-                    if(a.size()==0){
+                    if (a.size() == 0) {
                         System.out.println("검색 결과 없음");
                         continue;
                     }
@@ -64,12 +105,11 @@ public class Main {
                     System.out.println(a.get(i).getId() + " / " + a.get(i).getTitle() + " / " + a.get(i).getBody() + " / " + a.get(i).getDate());
                 }
 
-            }
-            else if (cmd.startsWith("detail")) {
+            } else if (cmd.startsWith("detail")) {
                 String[] str = cmd.split(" ");
                 int num = Integer.parseInt(str[1]);
                 Article a = getArticleId(num);
-                if(a == null){
+                if (a == null) {
                     System.out.println(num + "번 게시글은 없습니다.");
                     continue;
                 }
@@ -82,12 +122,12 @@ public class Main {
             } else if (cmd.startsWith("delete")) {
                 String[] str = cmd.split(" ");
                 int num;
-                try{
+                try {
                     num = Integer.parseInt(str[1]);
                 } catch (NumberFormatException e) {
                     System.out.println("error");
                     return;
-                }catch (IndexOutOfBoundsException e){
+                } catch (IndexOutOfBoundsException e) {
                     System.out.println("error");
                     return;
                 }
@@ -128,6 +168,15 @@ public class Main {
         sc.close();
     }
 
+    private static boolean isJoinable(String loginId) {
+        for(Member m : memberList){
+            if(m.getLoginId().equals(loginId)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static Article getArticleId(int num) {
         for (Article article : lst) {
             if (article.getId() == num) {
@@ -138,58 +187,3 @@ public class Main {
     }
 }
 
-class Article {
-    private int id;
-    private String title;
-    private String body;
-    private String date;
-    private String newDate;
-
-    public Article(int id, String title, String body, String date, String newDate) {
-        this.id = id;
-        this.title = title;
-        this.body = body;
-        this.date = date;
-        this.newDate = newDate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getNewDate() {
-        return newDate;
-    }
-
-    public void setNewDate(String newDate) {
-        this.newDate = newDate;
-    }
-}
