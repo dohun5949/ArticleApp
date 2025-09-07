@@ -37,8 +37,11 @@ public class App {
                 articlecontroller.doDelete(cmd);
             } else if (cmd.startsWith("modify")) {
                 articlecontroller.doModify(cmd);
-
-            } else {
+            }else if(cmd.equals("longin")){
+                membercontroller.login();
+            }else if(cmd.equals("logout")){
+                membercontroller.logout();
+            }else {
                 System.out.println("사용할 수 없는 명령어입니다.");
             }
         }

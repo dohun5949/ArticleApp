@@ -11,7 +11,7 @@ public class Membercontroller {
     private Scanner sc;
     private int memberId = 0;
     private static List<Member> memberList = new ArrayList<>();
-
+    private Member loginedMember;
     public Membercontroller(Scanner sc) {
         this.sc = sc;
     }
@@ -66,5 +66,41 @@ public class Membercontroller {
         }
         return true;
     }
+    private boolean isLogined(){
+        return loginedMember == null;
+    }
+
+    public void login() {
+        System.out.println("=== 로그인 ===");
+        if(!isLogined()){
+            System.out.println("로그 아웃인 상태입니다.");
+            return;
+        }
+        System.out.println("아이디 : ");
+        String loginId = sc.nextLine().trim();
+        System.out.println("비밀번호 : ");
+        String loginPw = sc.nextLine().trim();
+        for(Member m: memberList){
+            if(m.getLoginId().equals(loginId) && m.getLoginPw().equals(loginPw)){
+                loginedMember = m;
+                System.out.println(loginId + "님 환영합니다.");
+                return;
+            }else{
+                System.out.println("로그인에 실패하였습니다.");
+            }
+            break;
+        }
+
+    }
+    public void logout(){
+        System.out.println("=== 로그아웃 ==");
+        if(isLogined()){
+            System.out.println("로그인 상태가 아닙니다.");
+            return;
+        }
+        loginedMember = null;
+        System.out.println("로그아웃 되었습니다.");
+    }
+
 }
 
